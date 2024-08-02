@@ -19,9 +19,26 @@ class macOSSync:
         self._collection  = "open_source_software"
 
 
-    def fetch_catalog(self) -> list:
+    def latest_fetch_catalog(self) -> list:
         contents = sucatalog.CatalogURL().url_contents
         return sucatalog.CatalogProducts(contents).products
+
+
+    def fetch_all_catalogs(self) -> list:
+        print("Fetching all catalogs")
+        catalog = []
+        for version in sucatalog.CatalogVersion:
+            if float(version.value) < 11.0:
+                break
+            for variant in sucatalog.SeedType:
+                print(f"  Fetching {version.name.lower().replace("_", " ").title()} {variant.name}")
+                url = sucatalog.CatalogURL(version, variant)
+                catalog.extend(sucatalog.CatalogProducts(url.url_contents).products)
+
+        # Deduplicate
+        catalog = list({product['Build']: product for product in catalog}.values())
+
+        return catalog
 
 
     def is_installer_already_uploaded(self, build: str, type: str = "InstallAssistant.pkg") -> bool:
@@ -44,7 +61,7 @@ class macOSSync:
 
 
     def iterate_catalog(self):
-        for product in self.fetch_catalog():
+        for product in self.fetch_all_catalogs():
             build = product['Build']
             name = f"{product['Title']} {product['Version']} ({product['Build']})"
             print(f"Checking {name}")
