@@ -127,13 +127,37 @@ class macOSSync:
                 "InstallAssistant.pkg.integrityDataV1"
             ]
 
+            description = ""
+            description += "Files:\n"
+
+            for file in files:
+                description += f"- {file}\n"
+            description += "\n"
+
+            description += "Original URLs:\n"
+            description += f"- {product['InstallAssistant']['URL']}\n"
+            description += f"- {product['InstallAssistant']['IntegrityDataURL']}\n"
+            description += "\n"
+
+            description += f"Original Post Date: {product['PostDate']}\n"
+            description += "\n"
+
+            description += f"Original Product ID: {product['ProductID']}\n"
+            description += "\n"
+
+            description += f"Original Catalog: {product['Catalog'].name}\n"
+            description += "\n"
+
+            description += "Uploaded automatically by macOS-Actions-Sync"
+
             item = internetarchive.upload(
                 identifier=f"macOS-{product['Build']}-InstallAssistant",
                 files=files,
                 metadata={
                     'collection': self._collection,
                     'title':      f"{product['Title']} {product['Version']} ({product['Build']}) InstallAssistant.pkg",
-                    'mediatype':  'software'
+                    'mediatype':  'software',
+                    'description': description,
                 },
                 access_key=self._access_key,
                 secret_key=self._secret_key,
