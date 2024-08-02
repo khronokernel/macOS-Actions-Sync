@@ -5,8 +5,8 @@ Goal is to download a single macOS installer and upload to archive.org
 import time
 import internetarchive
 
-from . import sucatalog
-from .network import download
+from . import sucatalog, integrity_verification
+from .network import download, human_fmt
 
 
 class macOSSync:
@@ -49,15 +49,16 @@ class macOSSync:
             name = f"{product['Title']} {product['Version']} ({product['Build']})"
             print(f"Checking {name}")
             if self.is_installer_already_uploaded(build):
-                print(f"  {build} already uploaded")
+                print(f"  {build} already uploaded, skipping")
                 continue
 
-            print(f"  {build} not uploaded, downloading")
+            print(f"  {name} not uploaded, downloading")
+            print(f"  Downloading {name} InstallAssistant.pkg")
 
             download_obj = download.DownloadObject(product["InstallAssistant"]["URL"], "InstallAssistant.pkg")
             download_obj.download()
             while download_obj.is_active():
-                print(f"  Percentage downloaded: {download_obj.get_percent():.2f}%", end="\r")
+                print(f"    Percentage downloaded: {download_obj.get_percent():.2f}%", end="\r")
                 time.sleep(5)
 
             if not download_obj.download_complete:
@@ -66,14 +67,16 @@ class macOSSync:
                 print(f"URL: {product['InstallAssistant']['URL']}")
                 raise Exception(f"Failed to download {build}")
 
-            print("  Percentage downloaded: 100.00%")
+            print("    Percentage downloaded: 100.00%")
+            print(f"    Time elapsed: {(time.time() - download_obj.start_time):.2f} seconds")
+            print(f"    Speed: {human_fmt(download_obj.downloaded_file_size / (time.time() - download_obj.start_time))}/s")
 
-            print(f"  {build} InstallAssistant downloaded, downloading integrity data")
+            print(f"  Downloading {name} InstallAssistant.pkg.integrityDataV1")
 
             download_obj = download.DownloadObject(product["InstallAssistant"]["IntegrityDataURL"], "InstallAssistant.pkg.integrityDataV1")
             download_obj.download()
             while download_obj.is_active():
-                print(f"  Percentage downloaded: {download_obj.get_percent():.2f}%", end="\r")
+                print(f"    Percentage downloaded: {download_obj.get_percent():.2f}%", end="\r")
                 time.sleep(5)
 
             if not download_obj.download_complete:
@@ -82,9 +85,24 @@ class macOSSync:
                 print(f"URL: {product['InstallAssistant']['IntegrityDataURL']}")
                 raise Exception(f"Failed to download {build}")
 
-            print("  Percentage downloaded: 100.00%")
+            print("    Percentage downloaded: 100.00%")
+            print(f"    Time elapsed: {(time.time() - download_obj.start_time):.2f} seconds")
+            print(f"    Speed: {human_fmt(download_obj.downloaded_file_size / (time.time() - download_obj.start_time))}/s")
 
-            print(f"  {build} downloaded, uploading")
+
+            print(f"  Verifying {name} InstallAssistant.pkg")
+
+            chunk_obj = integrity_verification.ChunklistVerification("InstallAssistant.pkg", "InstallAssistant.pkg.integrityDataV1")
+            chunk_obj.validate()
+
+            while chunk_obj.status == integrity_verification.ChunklistStatus.IN_PROGRESS:
+                print(f"Validating {chunk_obj.current_chunk} of {chunk_obj.total_chunks}")
+                time.sleep(5)
+
+            if chunk_obj.status == integrity_verification.ChunklistStatus.FAILURE:
+                print(chunk_obj.error_msg)
+                raise Exception(f"Failed to validate {build}")
+
 
             # upload to archive.org
             files = [
@@ -105,8 +123,8 @@ class macOSSync:
             )
 
             print(f"  {build} uploaded")
-            print(f"  Item: {item}")
 
+            # Only upload one installer at a time
             return
 
 
