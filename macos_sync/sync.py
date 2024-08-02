@@ -74,7 +74,7 @@ class macOSSync:
             download_obj.download()
             while download_obj.is_active():
                 print(f"  Percentage downloaded: {download_obj.get_percent():.2f}%", end="\r")
-                # time.sleep(5)
+                time.sleep(5)
 
             if not download_obj.download_complete:
                 print("")
