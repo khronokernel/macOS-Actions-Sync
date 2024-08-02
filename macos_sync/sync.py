@@ -31,7 +31,7 @@ class macOSSync:
             if float(version.value) < 11.0:
                 break
             for variant in sucatalog.SeedType:
-                print(f"  Fetching {version.name.lower().replace("_", " ").title()} {variant.name}")
+                print(f"  Fetching {version.name.lower().replace('_', ' ').title()} {variant.name}")
                 url = sucatalog.CatalogURL(version, variant)
                 catalog.extend(sucatalog.CatalogProducts(url.url_contents).products)
 
