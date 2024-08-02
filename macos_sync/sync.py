@@ -96,7 +96,7 @@ class macOSSync:
             chunk_obj.validate()
 
             while chunk_obj.status == integrity_verification.ChunklistStatus.IN_PROGRESS:
-                print(f"Validating {chunk_obj.current_chunk} of {chunk_obj.total_chunks}")
+                print(f"    Validating {chunk_obj.current_chunk} of {chunk_obj.total_chunks}")
                 time.sleep(5)
 
             if chunk_obj.status == integrity_verification.ChunklistStatus.FAILURE:
