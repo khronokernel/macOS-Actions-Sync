@@ -1,0 +1,32 @@
+name: CI - Sync Installers
+
+on:
+  schedule:
+  - cron: "0 * * * *"
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: CI - Sync Installers
+    runs-on: macos-latest
+
+    env:
+      IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
+      IA_SECRET_KEY: ${{ secrets.IA_SECRET_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install -r requirements.txt
+
+      - name: Sync Installers
+        run: python3 main.py --access_key $IA_ACCESS_KEY --secret_key $IA_SECRET_KEY
