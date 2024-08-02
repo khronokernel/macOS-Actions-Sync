@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: CI - Sync Installers
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     env:
       IA_ACCESS_KEY: ${{ secrets.IA_ACCESS_KEY }}
