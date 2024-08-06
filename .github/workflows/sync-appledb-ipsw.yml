@@ -1,4 +1,4 @@
-name: CI - Sync Installers
+name: CI - Sync AppleDB IPSW
 
 on:
   schedule:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: CI - Sync Installers
+    name: CI - Sync AppleDB IPSW
     runs-on: ubuntu-latest
 
     env:
@@ -29,4 +29,4 @@ jobs:
           python3 -m pip install -r requirements.txt
 
       - name: Sync Installers
-        run: python3 main.py --access_key $IA_ACCESS_KEY --secret_key $IA_SECRET_KEY
+        run: python3 main.py --access_key $IA_ACCESS_KEY --secret_key $IA_SECRET_KEY --variant "AppleDB IPSW"
