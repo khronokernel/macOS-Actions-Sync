@@ -150,7 +150,7 @@ class macOSSync:
 
             description += "Uploaded automatically by macOS-Actions-Sync"
 
-            item = internetarchive.upload(
+            responses = internetarchive.upload(
                 identifier=f"macOS-{product['Build']}-InstallAssistant",
                 files=files,
                 metadata={
@@ -162,6 +162,13 @@ class macOSSync:
                 access_key=self._access_key,
                 secret_key=self._secret_key,
             )
+
+            for response in responses:
+                if response.status_code != 200:
+                    print(f"Failed to upload {build}")
+                    print(response.text)
+                    raise Exception(f"Failed to upload {build}")
+
 
             print(f"  {build} uploaded")
 
