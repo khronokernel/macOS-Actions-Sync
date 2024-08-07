@@ -83,6 +83,14 @@ class macOSSync:
             print(f"URL: {url}")
             raise Exception(f"Failed to download {name}")
 
+        # Check if we downloaded an HTML file
+        if not name.endswith("html"):
+            # Check if content starts with '<!DOCTYPE html>'
+            with open(name, "r") as f:
+                if f.read(15) == "<!DOCTYPE html>":
+                    print(f"    {url} is a 404")
+                    raise Exception(f"{url} is a 404")
+
         print("    Percentage downloaded: 100.00%")
         print(f"    Time elapsed: {(time.time() - download_obj.start_time):.2f} seconds")
         print(f"    Speed: {human_fmt(download_obj.downloaded_file_size / (time.time() - download_obj.start_time))}/s")
@@ -230,16 +238,10 @@ class macOSSync:
                             continue
                         if entry["url"].endswith(variant) is False:
                             continue
+                        if "preferred" in entry:
+                            if entry["preferred"] is False:
+                                continue
 
-                        # Attempt to match macos_installer_handler.py's format
-                        # installers[item["build"]] = {
-                        #     "Version":   item["version"],
-                        #     "Build":     item["build"],
-                        #     "Link":      entry["url"],
-                        #     "Variant":   "Beta" if item["beta"] else "Public",
-                        #     "Date":      item["released"],
-                        # }
-                        # pprint.pprint(item)
                         installers.append({
                             "Version":   item["version"],
                             "Build":     item["build"],
