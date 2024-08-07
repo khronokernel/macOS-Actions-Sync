@@ -87,9 +87,12 @@ class macOSSync:
         if not name.endswith("html"):
             # Check if content starts with '<!DOCTYPE html>'
             with open(name, "r") as f:
-                if f.read(15) == "<!DOCTYPE html>":
-                    print(f"    {url} is a 404")
-                    raise Exception(f"{url} is a 404")
+                try:
+                    if f.read(15) == "<!DOCTYPE html>":
+                        print(f"    {url} is a 404")
+                        raise Exception(f"{url} is a 404")
+                except UnicodeDecodeError:
+                    pass
 
         print("    Percentage downloaded: 100.00%")
         print(f"    Time elapsed: {(time.time() - download_obj.start_time):.2f} seconds")
