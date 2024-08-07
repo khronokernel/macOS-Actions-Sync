@@ -7,6 +7,11 @@ on:
     branches:
       - main
 
+# Disable concurrent runs
+concurrency:
+  group: sync-sucatalog
+  cancel-in-progress: true
+
 jobs:
   build:
     name: CI - Sync SUCatalog InstallAssistants

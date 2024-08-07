@@ -236,6 +236,11 @@ class macOSSync:
                         if "sha1" in source["hashes"]:
                             hash = source["hashes"]["sha1"]
 
+                    name = "macOS"
+                    if "appledbWebImage" in item:
+                        if "id" in item["appledbWebImage"]:
+                            name += " " + item["appledbWebImage"]["id"]
+
                     for entry in source["links"]:
                         if "url" not in entry:
                             continue
@@ -246,6 +251,7 @@ class macOSSync:
                                 continue
 
                         installers.append({
+                            "Name":      name,
                             "Version":   item["version"],
                             "Build":     item["build"],
                             "URL":       entry["url"],
@@ -274,7 +280,7 @@ class macOSSync:
 
         for installer in self.fetch_apple_db_items():
             build = installer['Build']
-            name = f"macOS {installer['Version']} ({build})"
+            name = f"{installer['Name']} {installer['Version']} ({build})"
 
             if build in known_bad_builds:
                 continue
