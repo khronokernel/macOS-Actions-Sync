@@ -2,7 +2,7 @@ name: CI - Sync AppleDB IPSW
 
 on:
   schedule:
-  - cron: "0 * * * *"
+  - cron: "0 */2 * * *"
   push:
     branches:
       - main
