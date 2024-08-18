@@ -13,9 +13,10 @@ from .network import download, human_fmt, NetworkUtilities
 
 class macOSSync:
 
-    def __init__(self, access_key: str, secret_key: str) -> None:
-        self._access_key  = access_key
-        self._secret_key  = secret_key
+    def __init__(self, access_key: str, secret_key: str, target_version: str = None) -> None:
+        self._access_key     = access_key
+        self._secret_key     = secret_key
+        self._target_version = target_version
 
         self._contributor = "khronokernel"
         self._collection  = "open_source_software"
@@ -248,6 +249,10 @@ class macOSSync:
                             continue
                         if "preferred" in entry:
                             if entry["preferred"] is False:
+                                continue
+
+                        if self._target_version:
+                            if not item["version"].startswith(self._target_version):
                                 continue
 
                         installers.append({
