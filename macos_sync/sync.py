@@ -228,6 +228,16 @@ class macOSSync:
                     continue
                 if "sources" not in item:
                     continue
+
+                if self._target_version:
+                    if not item["version"].startswith(self._target_version):
+                        continue
+
+                name = "macOS"
+                if "appledbWebImage" in item:
+                    if "id" in item["appledbWebImage"]:
+                        name += " " + item["appledbWebImage"]["id"]
+
                 for source in item["sources"]:
                     if "links" not in source:
                         continue
@@ -237,11 +247,6 @@ class macOSSync:
                         if "sha1" in source["hashes"]:
                             hash = source["hashes"]["sha1"]
 
-                    name = "macOS"
-                    if "appledbWebImage" in item:
-                        if "id" in item["appledbWebImage"]:
-                            name += " " + item["appledbWebImage"]["id"]
-
                     for entry in source["links"]:
                         if "url" not in entry:
                             continue
@@ -249,10 +254,6 @@ class macOSSync:
                             continue
                         if "preferred" in entry:
                             if entry["preferred"] is False:
-                                continue
-
-                        if self._target_version:
-                            if not item["version"].startswith(self._target_version):
                                 continue
 
                         installers.append({
@@ -280,7 +281,10 @@ class macOSSync:
         """
         known_bad_builds = [
             "20A5299w",
-            "20A5323l"
+            "20A5323l",
+
+            # Requires login
+            "23A5257q", # macOS 14.0 Developer Beta 1
         ]
 
         for installer in self.fetch_apple_db_items():
