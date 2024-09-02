@@ -63,6 +63,15 @@ class macOSSync:
         return False
 
 
+    def is_identifier_already_in_use(self, identifier: str) -> bool:
+        """
+        Check if an identifier is already in use
+        """
+        search = internetarchive.get_item(identifier)
+
+        return search.exists
+
+
     def download_item(self, url: str) -> None:
         name = Path(url).name
         print(f"  Downloading {name}")
@@ -166,8 +175,13 @@ class macOSSync:
                 "InstallAssistant.pkg.integrityDataV1"
             ]
 
+            identifier = f"macOS-{build}-InstallAssistant"
+            while self.is_identifier_already_in_use(identifier):
+                print(f"  Identifier {identifier} already in use, appending -1")
+                identifier += "-1"
+
             responses = internetarchive.upload(
-                identifier=f"macOS-{product['Build']}-InstallAssistant",
+                identifier=identifier,
                 files=files,
                 metadata={
                     'collection': self._collection,
@@ -326,8 +340,13 @@ class macOSSync:
             # upload to archive.org
             files = [file_name]
 
+            identifier = f"macOS-{build}-UniversalMac"
+            while self.is_identifier_already_in_use(identifier):
+                print(f"  Identifier {identifier} already in use, appending -1")
+                identifier += "-1"
+
             responses = internetarchive.upload(
-                identifier=f"macOS-{build}-UniversalMac",
+                identifier=identifier,
                 files=files,
                 metadata={
                     'collection': self._collection,
