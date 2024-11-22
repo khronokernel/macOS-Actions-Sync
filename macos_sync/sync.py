@@ -187,7 +187,7 @@ class macOSSync:
                     'collection': self._collection,
                     'title':      f"{product['Title']} {product['Version']} ({product['Build']}) InstallAssistant.pkg",
                     'mediatype':  'software',
-                    'description': self.generate_description(files, [product['InstallAssistant']['URL'], product['InstallAssistant']['IntegrityDataURL']], product['PostDate'], product['ProductID'], product['Catalog'].name),
+                    'description': self.generate_description(files, [product['InstallAssistant']['URL'], product['InstallAssistant']['IntegrityDataURL']], product['PostDate'], product['ProductID'], product['Catalog'].name if hasattr(product['Catalog'], 'name') else None),
                 },
                 access_key=self._access_key,
                 secret_key=self._secret_key,

@@ -280,7 +280,7 @@ class CatalogProducts:
                 "Title":     None,
                 "Build":     None,
                 "Version":   None,
-                "Catalog":   "",
+                "Catalog":   None,
 
                 # Optional keys if not InstallAssistant only:
                 # "Packages": None,
